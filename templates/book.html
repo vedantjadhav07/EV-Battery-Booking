@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Book Appointment | EV Battery Booking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #0e0e0e;
+    }
+
+    select option {
+      background-color: #1f2937;
+      color: white;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center px-4 py-10 text-white">
+
+  <div class="w-full max-w-xl bg-[#1a1a1a] rounded-2xl shadow-lg p-8 border border-gray-800">
+
+    <!-- Header -->
+    <div class="mb-8 text-center">
+      <h2 class="text-4xl font-bold text-green-400">Book Battery Swap</h2>
+      <p class="text-sm text-gray-400 mt-2">Plan your appointment with comfort and speed</p>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="mb-4 px-4 py-2 rounded text-sm
+                      {{ 'bg-green-100 text-green-800' if category == 'success' else 'bg-red-100 text-red-800' }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- Booking Form -->
+    <form method="POST" class="space-y-6">
+
+      <!-- Station Select -->
+      <div>
+        <label class="block text-sm text-gray-300 mb-1">Select Station</label>
+        <div class="relative">
+          <select name="station_id" id="station" required onchange="updateBatteryInfo()"
+                  class="appearance-none w-full bg-gray-800 border border-gray-700 text-white px-4 py-2 rounded focus:ring-2 focus:ring-green-400 outline-none cursor-pointer">
+            {% for s in stations %}
+              <option value="{{ s[0] }}" data-available="{{ s[3] }}">
+                {{ s[1] }} - {{ s[2] }} ({{ s[3] }} available)
+              </option>
+            {% endfor %}
+          </select>
+          <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+            <svg class="h-4 w-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.939l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.25 8.27a.75.75 0 01-.02-1.06z" clip-rule="evenodd" />
+            </svg>
+          </div>
+        </div>
+        <p id="battery-info" class="text-xs text-green-400 mt-1"></p>
+      </div>
+
+      <!-- Date -->
+      <div>
+        <label class="block text-sm text-gray-300 mb-1">Date</label>
+        <input type="date" name="date" required
+               class="w-full bg-gray-800 border border-gray-700 text-white px-4 py-2 rounded focus:ring-2 focus:ring-green-400 outline-none">
+      </div>
+
+      <!-- Time -->
+      <div>
+        <label class="block text-sm text-gray-300 mb-1">Time</label>
+        <input type="time" name="time" required
+               class="w-full bg-gray-800 border border-gray-700 text-white px-4 py-2 rounded focus:ring-2 focus:ring-green-400 outline-none">
+      </div>
+
+      <!-- Submit -->
+      <button type="submit"
+              class="w-full bg-green-500 text-black py-3 rounded hover:bg-green-400 transition font-semibold text-lg">
+        Confirm Booking
+      </button>
+    </form>
+
+    <!-- Back Link -->
+    <div class="text-center mt-6">
+      <a href="{{ url_for('dashboard') }}" class="text-sm text-green-300 hover:underline">&larr; Back to Dashboard</a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="text-sm text-green-500 mt-10 text-center">
+    &copy; {{ 2025 }} EV Battery Booking System
+  </footer>
+
+<script>
+function updateBatteryInfo() {
+  const select = document.getElementById('station');
+  const selectedOption = select.options[select.selectedIndex];
+  const available = selectedOption.getAttribute('data-available');
+  document.getElementById('battery-info').innerText = `Available Batteries: ${available}`;
+}
+
+document.querySelector("form").addEventListener("submit", function(e) {
+  const select = document.getElementById('station');
+  const selectedOption = select.options[select.selectedIndex];
+  const available = parseInt(selectedOption.getAttribute('data-available'));
+  if (available <= 0) {
+    const confirmBooking = confirm("⚠️ No batteries available at this station. Do you still want to continue?");
+    if (!confirmBooking) e.preventDefault();
+  }
+});
+window.onload = updateBatteryInfo;
+</script>
+
+</body>
+</html>

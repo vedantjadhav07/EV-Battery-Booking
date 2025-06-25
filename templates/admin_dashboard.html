@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard | EV Booking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #0f0f0f;
+    }
+
+    .card {
+      background-color: #1a1a1a;
+    }
+
+    .header-green {
+      background-color: #22c55e;
+    }
+
+    .table-header {
+      background-color: #24d06a33;
+    }
+
+    .table-cell {
+      border-color: #2d2d2d;
+    }
+
+    select,
+    input[type="date"] {
+      background-color: #111;
+      color: white;
+    }
+  </style>
+</head>
+
+<body class="text-white min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="header-green text-white py-4 shadow-md">
+    <div class="w-full max-w-7xl mx-auto px-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold">Admin Dashboard - Appointments</h1>
+      <a href="{{ url_for('logout') }}"
+        class="bg-white text-green-700 px-4 py-2 rounded hover:bg-green-100 transition font-medium">Logout</a>
+    </div>
+  </header>
+
+  <main class="w-full max-w-7xl mx-auto px-4 py-8 flex-grow">
+
+    <!-- Filter Form -->
+    <form method="GET" action="{{ url_for('admin_dashboard') }}"
+      class="card p-6 rounded shadow-md mb-6 flex flex-wrap gap-6 items-end text-sm">
+      <div>
+        <label class="block text-gray-300 font-medium mb-1">Filter by Date:</label>
+        <input type="date" name="date" value="{{ selected_date or '' }}"
+          class="p-2 rounded border border-gray-600 w-full focus:outline-none focus:ring-green-400" />
+      </div>
+
+      <div>
+        <label class="block text-gray-300 font-medium mb-1">Filter by Station:</label>
+        <select name="station"
+          class="p-2 rounded border border-gray-600 w-full focus:outline-none focus:ring-green-400">
+          <option value="">-- All Stations --</option>
+          {% for s in station_list %}
+          <option value="{{ s[0] }}" {% if selected_station == s[0]|string %}selected{% endif %}>{{ s[1] }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="flex gap-2">
+        <button type="submit"
+          class="bg-green-500 hover:bg-green-400 text-black px-4 py-2 rounded font-medium">Apply</button>
+        <a href="{{ url_for('admin_dashboard') }}"
+          class="text-green-400 underline hover:text-green-300 self-center">Reset</a>
+      </div>
+    </form>
+
+    <!-- Export -->
+    <div class="mb-4 text-sm text-green-400">
+      <a href="{{ url_for('export_csv') }}" class="underline hover:text-green-300">⬇ Export All Appointments as CSV</a>
+    </div>
+
+    <!-- Table -->
+    <div class="overflow-x-auto rounded-lg shadow-lg card">
+      <table class="min-w-full text-sm divide-y divide-green-800">
+        <thead class="table-header text-green-300 uppercase text-xs font-semibold tracking-wider">
+          <tr>
+            <th class="py-3 px-4 text-left">User</th>
+            <th class="py-3 px-4 text-left">Station</th>
+            <th class="py-3 px-4 text-left">City</th>
+            <th class="py-3 px-4 text-left">Date</th>
+            <th class="py-3 px-4 text-left">Time</th>
+            <th class="py-3 px-4 text-left">Status</th>
+            <th class="py-3 px-4 text-left">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="text-gray-300">
+          {% for a in appointments %}
+          <tr class="hover:bg-green-900/30 border-b border-green-800">
+            <td class="py-2 px-4">{{ a[1] }}</td>
+            <td class="py-2 px-4">{{ a[2] }}</td>
+            <td class="py-2 px-4">{{ a[3] }}</td>
+            <td class="py-2 px-4">{{ a[4] }}</td>
+            <td class="py-2 px-4">{{ a[5] }}</td>
+            <td class="py-2 px-4 font-medium">
+              {% if a[6] == 'approved' %}
+              <span class="text-green-400">{{ a[6] }}</span>
+              {% elif a[6] == 'cancelled' %}
+              <span class="text-red-500">{{ a[6] }}</span>
+              {% else %}
+              <span class="text-yellow-400">{{ a[6] }}</span>
+              {% endif %}
+            </td>
+            <td class="py-2 px-4 space-x-2">
+              {% if a[6] != 'approved' %}
+              <a href="{{ url_for('update_status', appointment_id=a[0], status='approved') }}"
+                class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-xs">Approve</a>
+              {% endif %}
+              {% if a[6] != 'cancelled' %}
+              <a href="{{ url_for('update_status', appointment_id=a[0], status='cancelled') }}"
+                class="bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700 text-xs">Cancel</a>
+              {% endif %}
+              <a href="{{ url_for('delete_appointment', appointment_id=a[0]) }}"
+                onclick="return confirm('Are you sure you want to delete this appointment?')"
+                class="bg-red-700 text-white px-3 py-1 rounded hover:bg-red-800 text-xs">Delete</a>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="7" class="text-center text-gray-400 py-6">No appointments found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+
+  <footer class="bg-green-100 text-center text-green-700 py-3 text-sm">
+    &copy; {{ 2025 }} EV Battery Booking Admin Panel
+  </footer>
+
+</body>
+
+</html>

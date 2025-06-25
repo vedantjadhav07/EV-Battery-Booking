@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Contact Us | EV Booking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #0f0f0f;
+    }
+    .card-bg {
+      background-color: #1b1b1b;
+    }
+  </style>
+</head>
+<body class="text-white min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-green-600 py-4 shadow-md">
+    <div class="w-full max-w-7xl mx-auto px-4 flex justify-between items-center">
+      <h2 class="text-2xl font-bold text-white">Contact Us</h2>
+      <a href="{{ url_for('dashboard') }}"
+        class="bg-white text-green-700 px-4 py-2 rounded hover:bg-green-100 transition font-medium">Dashboard</a>
+    </div>
+  </header>
+
+  <!-- Form -->
+  <main class="flex-grow w-full max-w-2xl mx-auto px-4 py-12">
+    <form action="https://formspree.io/f/mzzgkrqj" method="POST" class="bg-[#1b1b1b] p-8 rounded shadow-lg space-y-6">
+      <h3 class="text-2xl font-semibold text-green-400 mb-4">We’d love to hear from you</h3>
+
+      <div>
+        <label class="block mb-1 text-sm text-gray-300">Your Name</label>
+        <input type="text" name="name" required
+               class="w-full p-3 rounded bg-[#2a2a2a] text-white border border-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+      </div>
+
+      <div>
+        <label class="block mb-1 text-sm text-gray-300">Email</label>
+        <input type="email" name="email" required
+               class="w-full p-3 rounded bg-[#2a2a2a] text-white border border-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+      </div>
+
+      <div>
+        <label class="block mb-1 text-sm text-gray-300">Message</label>
+        <textarea name="message" rows="5" required
+                  class="w-full p-3 rounded bg-[#2a2a2a] text-white border border-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+      </div>
+
+      <!-- Optional: success redirect or disable captcha -->
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="_next" value="https://yourwebsite.com/thank-you">
+
+      <button type="submit"
+              class="bg-green-500 text-black px-6 py-2 rounded hover:bg-green-400 font-medium transition w-full">
+        Send Message
+      </button>
+    </form>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-green-100 text-center text-green-700 py-3 text-sm">
+    &copy; {{ 2025 }} EV Battery Booking System
+  </footer>
+
+</body>
+</html>

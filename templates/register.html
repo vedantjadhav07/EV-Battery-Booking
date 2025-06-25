@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Register | EV Battery Booking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #0f0f0f;
+    }
+    .green-glow {
+      background: radial-gradient(circle at bottom left, #00ff73, transparent 60%);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center green-glow">
+
+  <div class="bg-[#111] shadow-2xl rounded-xl w-full max-w-5xl overflow-hidden grid grid-cols-1 md:grid-cols-2 text-white">
+
+    <!-- Left Panel (Branding Text) -->
+    <div class="flex flex-col justify-center items-start p-10 bg-gradient-to-br from-green-600 via-green-500 to-green-700">
+      <h2 class="text-4xl font-bold mb-4">Join the EV WORLD</h2>
+      <p class="text-lg text-green-100 mb-6">
+        Create your account to begin booking EV battery swaps and support a cleaner future.
+      </p>
+         </div>
+
+    <!-- Right Panel (Register Form) -->
+    <div class="bg-[#1a1a1a] p-10">
+      <h2 class="text-3xl font-bold text-green-400 text-center mb-6">Create an Account</h2>
+
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="mb-4 px-4 py-2 rounded {{ 'bg-green-100 text-green-700' if category == 'success' else 'bg-red-100 text-red-700' }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" class="space-y-5">
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-300">Full Name</label>
+          <input type="text" name="name" required
+                 class="w-full mt-1 px-4 py-2 border border-gray-600 bg-transparent rounded focus:outline-none focus:ring-2 focus:ring-green-400 text-white">
+        </div>
+
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-300">Email Address</label>
+          <input type="email" name="email" required
+                 class="w-full mt-1 px-4 py-2 border border-gray-600 bg-transparent rounded focus:outline-none focus:ring-2 focus:ring-green-400 text-white">
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-300">Password</label>
+          <input type="password" name="password" required
+                 class="w-full mt-1 px-4 py-2 border border-gray-600 bg-transparent rounded focus:outline-none focus:ring-2 focus:ring-green-400 text-white">
+        </div>
+
+        <button type="submit"
+                class="w-full bg-green-500 text-black py-2 rounded hover:bg-green-400 transition font-semibold text-lg">
+          Register
+        </button>
+      </form>
+
+      <p class="mt-6 text-center text-sm text-gray-400">
+        Already have an account?
+        <a href="{{ url_for('login') }}" class="text-green-400 font-medium hover:underline">Login here</a>
+      </p>
+    </div>
+  </div>
+
+</body>
+</html>
