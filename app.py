@@ -1,4 +1,5 @@
 import csv
+import os
 from io import StringIO
 from flask import Response
 from flask import Flask, render_template, request, redirect, session, url_for, flash
@@ -286,6 +287,28 @@ def delete_appointment(appointment_id):
     cur.close()
     return redirect(url_for('admin_dashboard'))
 
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        subject = request.form.get('subject')
+        message = request.form['message']
+
+        # Future: save to DB or send via email
+        flash("Thanks for reaching out. We’ll get back to you soon.", "success")
+        return redirect(url_for('contact'))
+
+    return render_template('contact.html')
+
 # -- Run App --
-if __name__ == '__main__':
-    app.run(debug=True)
+#if __name__ == '__main__':
+   # app.run(debug=True)
+
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
+
+
