@@ -11,8 +11,8 @@ mysql = init_db(app)
 
 
 @app.route('/')
-def home():
-    return render_template('home.html')
+def index():
+    return render_template('index.html')
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -71,7 +71,7 @@ def dashboard():
 def logout():
     session.clear()
     flash('Logged out successfully.', 'info')
-    return redirect(url_for('home'))
+    return redirect(url_for('index'))
 
 
 @app.route('/book', methods=['GET', 'POST'])
@@ -285,20 +285,6 @@ def delete_appointment(appointment_id):
 
     cur.close()
     return redirect(url_for('admin_dashboard'))
-
-@app.route('/contact', methods=['GET', 'POST'])
-def contact():
-    if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
-        subject = request.form.get('subject')
-        message = request.form['message']
-
-        # You can log, email or store this data in DB
-        flash('Thanks for reaching out. We will get back to you soon!', 'success')
-        return redirect(url_for('contact'))
-
-    return render_template('contact.html')
 
 # -- Run App --
 if __name__ == '__main__':
