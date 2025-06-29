@@ -7,6 +7,9 @@ from db_config import init_db
 from markupsafe import Markup  
 
 import json
+from dotenv import load_dotenv
+load_dotenv()
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
