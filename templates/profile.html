@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>My Profile | EV Booking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #0f0f0f;
+    }
+  </style>
+</head>
+
+<body class="text-white min-h-screen flex justify-center items-center px-4 py-12 font-sans">
+
+  <div class="w-full max-w-3xl bg-[#161616] p-8 rounded-2xl shadow-xl border border-green-600">
+
+    <!-- Header -->
+    <h1 class="text-3xl font-bold text-green-400 text-center mb-6">👤 My Profile</h1>
+
+    <!-- User Info -->
+    <section class="mb-8 bg-[#101010] rounded-lg p-6 border border-green-500">
+      <h2 class="text-xl font-semibold text-green-300 mb-3">User Info</h2>
+      <div class="text-base space-y-2">
+        <p><span class="text-green-200 font-medium">Name:</span> {{ user[0] }}</p>
+        <p><span class="text-green-200 font-medium">Email:</span> {{ user[1] }}</p>
+      </div>
+    </section>
+
+    <!-- Latest Feedback -->
+    {% if feedback %}
+    <section class="bg-[#101010] rounded-lg p-6 border border-green-500">
+      <h2 class="text-xl font-semibold text-green-300 mb-3">📝 Latest Feedback</h2>
+      <ul class="space-y-3 text-sm">
+        <li>
+          <span class="text-green-200">1. How easy was it to book a battery appointment?</span><br />
+          ⭐ <span class="text-white">{{ feedback[0] }}/5</span>
+        </li>
+        <li>
+          <span class="text-green-200">2. Was the station staff polite and helpful?</span><br />
+          ⭐ <span class="text-white">{{ feedback[1] }}/5</span>
+        </li>
+        <li>
+          <span class="text-green-200">3. How satisfied are you with battery availability?</span><br />
+          ⭐ <span class="text-white">{{ feedback[2] }}/5</span>
+        </li>
+        <li>
+          <span class="text-green-200">4. Was the battery fully charged and in good condition?</span><br />
+          ⭐ <span class="text-white">{{ feedback[3] }}/5</span>
+        </li>
+        <li>
+          <span class="text-green-200">5. Would you recommend this service to others?</span><br />
+          ⭐ <span class="text-white">{{ feedback[4] }}/5</span>
+        </li>
+      </ul>
+      <p class="mt-4"><span class="text-green-300 font-medium">Message:</span> {{ feedback[5] or "No message" }}</p>
+      <p class="text-xs text-gray-500 mt-2">🕒 Submitted on: {{ feedback[6] }}</p>
+    </section>
+    {% else %}
+    <div class="text-center mt-6 text-sm text-gray-400">
+      🛠️ You haven’t submitted any feedback yet.
+    </div>
+    {% endif %}
+
+    <!-- Back Button -->
+    <div class="mt-8 text-center">
+      <a href="{{ url_for('dashboard') }}"
+        class="inline-block bg-green-500 text-black font-bold px-6 py-2 rounded hover:bg-green-400 transition duration-200">
+        ← Back to Dashboard
+      </a>
+    </div>
+  </div>
+
+</body>
+
+</html>

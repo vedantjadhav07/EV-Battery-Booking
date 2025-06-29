@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Manage Stations</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #0f0f0f;
+    }
+  </style>
+</head>
+
+<body class="text-white min-h-screen flex flex-col font-sans">
+
+  <!-- Navbar -->
+  <header class="bg-green-600 py-4 px-6 flex justify-between items-center shadow-md">
+    <h1 class="text-2xl font-bold tracking-wide">⚙️ Manage Stations</h1>
+    <div class="flex gap-3">
+      <a href="{{ url_for('admin_dashboard') }}"
+         class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition">Dashboard</a>
+      <a href="{{ url_for('logout') }}"
+         class="bg-white text-green-700 px-4 py-2 rounded hover:bg-green-100 transition">Logout</a>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="flex-grow w-full max-w-5xl mx-auto px-4 py-10">
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="mb-6 space-y-2">
+          {% for category, message in messages %}
+            <div class="p-3 rounded text-sm font-medium
+              {% if category == 'success' %}bg-green-700{% elif category == 'danger' %}bg-red-600{% else %}bg-yellow-600{% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Add / Update Form -->
+    <div class="bg-[#1a1a1a] p-6 rounded-xl shadow-lg border border-green-800 mb-8">
+      <h2 class="text-2xl font-bold text-green-400 mb-4">
+        {% if station %}✏️ Update Station{% else %}➕ Add New Station{% endif %}
+      </h2>
+      <form method="POST" action="{{ url_for('add_station') }}" class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+
+        {% if station %}
+          <input type="hidden" name="station_id" value="{{ station[0] }}">
+        {% endif %}
+
+        <input type="text" name="name" placeholder="Station Name" required
+               class="p-3 rounded bg-gray-900 border border-gray-700 focus:ring-2 focus:ring-green-500"
+               value="{{ station[1] if station else '' }}">
+
+        <input type="text" name="address" placeholder="Address" required
+               class="p-3 rounded bg-gray-900 border border-gray-700 focus:ring-2 focus:ring-green-500"
+               value="{{ station[2] if station else '' }}">
+
+        <input type="text" name="city" placeholder="City" required id="city-input"
+               class="p-3 rounded bg-gray-900 border border-gray-700 focus:ring-2 focus:ring-green-500"
+               value="{{ station[3] if station else '' }}">
+
+        <input type="text" name="zip_code" placeholder="ZIP Code" required
+               class="p-3 rounded bg-gray-900 border border-gray-700 focus:ring-2 focus:ring-green-500"
+               value="{{ station[4] if station else '' }}">
+
+        <input type="number" name="total_batteries" placeholder="Total Batteries" min="0" required
+               class="p-3 rounded bg-gray-900 border border-gray-700 focus:ring-2 focus:ring-green-500"
+               value="{{ station[5] if station else '' }}">
+
+        <input type="number" name="available_batteries" placeholder="Available Batteries" min="0" required
+               class="p-3 rounded bg-gray-900 border border-gray-700 focus:ring-2 focus:ring-green-500"
+               value="{{ station[6] if station else '' }}">
+
+        <button type="submit"
+                class="col-span-full bg-green-500 text-black font-semibold py-3 rounded hover:bg-green-400 transition">
+          {% if station %}Update Station{% else %}Add Station{% endif %}
+        </button>
+      </form>
+    </div>
+
+    <!-- Station List Table -->
+    <div class="bg-[#1a1a1a] p-6 rounded-xl shadow-lg border border-green-800">
+      <h3 class="text-xl font-bold text-green-400 mb-4">📋 Station List</h3>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm table-auto border-collapse">
+          <thead class="bg-gray-800 text-green-300">
+            <tr>
+              <th class="py-2 px-4 text-left">ID</th>
+              <th class="py-2 px-4 text-left">Name</th>
+              <th class="py-2 px-4 text-left">City</th>
+              <th class="py-2 px-4 text-left">Total</th>
+              <th class="py-2 px-4 text-left">Available</th>
+              <th class="py-2 px-4 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in stations %}
+              <tr class="border-b border-gray-700 hover:bg-gray-700/40">
+                <td class="py-2 px-4">{{ s[0] }}</td>
+                <td class="py-2 px-4">{{ s[1] }}</td>
+                <td class="py-2 px-4">{{ s[3] }}</td>
+                <td class="py-2 px-4">{{ s[5] }}</td>
+                <td class="py-2 px-4">{{ s[6] }}</td>
+                <td class="py-2 px-4 space-x-2">
+                  <a href="{{ url_for('edit_station', station_id=s[0]) }}"
+                     class="text-yellow-400 hover:underline">Edit</a>
+                  <a href="{{ url_for('delete_station', station_id=s[0]) }}"
+                     onclick="return confirm('Are you sure you want to delete this station?')"
+                     class="text-red-500 hover:underline">Delete</a>
+                </td>
+              </tr>
+            {% else %}
+              <tr><td colspan="6" class="text-center text-gray-400 py-4">No stations added yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-green-500 text-center py-4 text-sm border-t border-gray-800">
+    &copy; {{ 2025 }} EV Battery Booking System
+  </footer>
+
+  <!-- Auto ZIP Fetch -->
+  <script>
+    document.getElementById('city-input')?.addEventListener('change', function () {
+      const city = this.value.trim();
+      const zipInput = document.querySelector('input[name="zip_code"]');
+
+      fetch(`https://api.postalpincode.in/postoffice/${city}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data[0]?.PostOffice?.length) {
+            zipInput.value = data[0].PostOffice[0].Pincode;
+          } else {
+            zipInput.value = "";
+          }
+        })
+        .catch(err => {
+          console.error("Error fetching pincode:", err);
+          zipInput.value = "";
+        });
+    });
+  </script>
+</body>
+</html>

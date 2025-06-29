@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Feedback Analysis</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      background-color: #0f0f0f;
+    }
+  </style>
+</head>
+
+<body class="text-white min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-green-600 py-4 px-6 flex justify-between items-center shadow">
+    <h1 class="text-xl font-bold tracking-wide">📈 Feedback Overview</h1>
+    <a href="{{ url_for('admin_dashboard') }}"
+       class="bg-white text-green-700 px-4 py-2 rounded hover:bg-green-100 transition font-medium">
+      ← Dashboard
+    </a>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow w-full max-w-7xl mx-auto px-6 py-10 space-y-10">
+
+    <!-- Average Rating Chart -->
+    <div class="bg-[#1a1a1a] border border-green-700 rounded-xl shadow-lg p-6">
+      <h2 class="text-2xl font-semibold text-green-400 mb-4">📊 Average Ratings</h2>
+      <canvas id="ratingChart" data-ratings="{{ avg_ratings|join(',') }}" height="120"></canvas>
+    </div>
+
+    <!-- Individual Feedback Table -->
+    <div class="bg-[#1a1a1a] border border-green-700 rounded-xl shadow-lg p-6 overflow-auto">
+      <h2 class="text-2xl font-semibold text-green-400 mb-4">🗒️ All Feedback</h2>
+      <table class="w-full table-auto text-sm border-collapse">
+        <thead class="bg-gray-800 text-green-300">
+          <tr>
+            <th class="py-3 px-4 text-left">User</th>
+            <th class="py-3 px-4 text-left">Q1</th>
+            <th class="py-3 px-4 text-left">Q2</th>
+            <th class="py-3 px-4 text-left">Q3</th>
+            <th class="py-3 px-4 text-left">Q4</th>
+            <th class="py-3 px-4 text-left">Q5</th>
+            <th class="py-3 px-4 text-left">Message</th>
+            <th class="py-3 px-4 text-left">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for f in feedback %}
+          <tr class="border-b border-gray-700 hover:bg-gray-700/40 transition">
+            <td class="py-2 px-4">{{ f[1] }}</td>
+            <td class="py-2 px-4">{{ f[2] }}</td>
+            <td class="py-2 px-4">{{ f[3] }}</td>
+            <td class="py-2 px-4">{{ f[4] }}</td>
+            <td class="py-2 px-4">{{ f[5] }}</td>
+            <td class="py-2 px-4">{{ f[6] }}</td>
+            <td class="py-2 px-4 text-gray-300 max-w-xs truncate">{{ f[7] or '—' }}</td>
+            <td class="py-2 px-4 text-sm text-gray-400">{{ f[8].strftime('%d-%m-%Y %H:%M') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-green-500 text-center py-4 text-sm border-t border-gray-800">
+    &copy; {{ 2025 }} EV Battery Booking System
+  </footer>
+
+  <!-- Chart Script -->
+  <script>
+    const canvas = document.getElementById('ratingChart');
+    const rawData = canvas.dataset.ratings.split(',').map(Number);
+
+    const ctx = canvas.getContext('2d');
+    const ratingChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: [
+          "Booking Ease", "Staff Behavior", "Battery Availability",
+          "Battery Condition", "Recommendation"
+        ],
+        datasets: [{
+          label: "Avg Rating (out of 5)",
+          data: rawData,
+          backgroundColor: "#22c55e",
+          borderRadius: 5,
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 5,
+            ticks: {
+              color: "#d1d5db"
+            },
+            grid: {
+              color: "#374151"
+            }
+          },
+          x: {
+            ticks: {
+              color: "#d1d5db"
+            },
+            grid: {
+              color: "#374151"
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            labels: {
+              color: "#a7f3d0"
+            }
+          }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>

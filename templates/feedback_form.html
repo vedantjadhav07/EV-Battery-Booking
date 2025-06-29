@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Give Feedback | EV Booking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #0f0f0f;
+    }
+  </style>
+</head>
+
+<body class="text-white min-h-screen flex justify-center items-center px-4 py-8 font-sans">
+
+  <div class="flex flex-col md:flex-row bg-[#161616] max-w-6xl w-full rounded-xl overflow-hidden shadow-2xl border border-green-500">
+
+    <!-- Illustration Side -->
+    <div class="hidden md:flex flex-col justify-center items-center p-10 w-1/2 bg-[#101010] border-r border-green-800">
+      <img src="https://cdn-icons-png.flaticon.com/512/3159/3159066.png" alt="Feedback Illustration"
+        class="w-64 h-auto drop-shadow-xl">
+      <h1 class="text-2xl font-bold mt-6 text-green-400 text-center">Give us your feedback</h1>
+      <p class="text-white/80 text-center mt-2 text-sm">Your opinion helps us power up better</p>
+    </div>
+
+    <!-- Feedback Form -->
+    <div class="w-full md:w-1/2 bg-[#121212] p-8 md:p-10">
+      <!-- Flash message -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="mb-4 space-y-2">
+            {% for category, message in messages %}
+              <div class="p-3 rounded text-sm 
+                  {% if category == 'success' %}bg-green-600 text-white{% elif category == 'danger' %}bg-red-600 text-white{% endif %}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" class="space-y-6">
+        <h2 class="text-2xl font-bold text-green-400 text-center mb-4">🔋 Rate Your EV Experience</h2>
+
+        {% set questions = [
+          "How easy was it to book a battery appointment?",
+          "Was the station staff polite and helpful?",
+          "How satisfied are you with battery availability?",
+          "Was the battery fully charged and in good condition?",
+          "Would you recommend this service to others?"
+        ] %}
+
+        {% for i in range(1, 6) %}
+        <div>
+          <label class="block mb-2 font-semibold text-green-300 text-sm">{{ i }}. {{ questions[i-1] }}</label>
+          <div class="flex gap-4 text-sm">
+            {% for score in range(1, 6) %}
+            <label class="flex items-center gap-1">
+              <input type="radio" name="q{{ i }}" value="{{ score }}" required class="accent-green-500">
+              {{ score }}
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+
+        <!-- Optional Message -->
+        <div>
+          <label class="block mb-2 font-semibold text-green-300 text-sm">🗨️ Additional Feedback</label>
+          <textarea name="message" rows="4" placeholder="Type your message here..."
+            class="w-full p-3 rounded-lg bg-[#0f0f0f] border border-green-600 focus:ring-2 focus:ring-green-400 resize-none text-white"></textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit"
+          class="w-full py-3 bg-green-500 hover:bg-green-400 text-black font-bold rounded-lg transition duration-200 shadow-md">
+          ✅ Submit Feedback
+        </button>
+
+        <a href="{{ url_for('dashboard') }}" class="block text-center text-sm mt-4 text-green-300 hover:underline">
+          ← Back to Dashboard
+        </a>
+      </form>
+    </div>
+  </div>
+
+</body>
+
+</html>

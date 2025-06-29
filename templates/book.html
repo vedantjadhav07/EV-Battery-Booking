@@ -7,30 +7,42 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
-      background-color: #0e0e0e;
+      background: linear-gradient(to bottom right, #0e0e0e, #111827);
     }
 
     select option {
       background-color: #1f2937;
       color: white;
     }
+
+    .card {
+      background-color: rgba(26, 26, 26, 0.95);
+      box-shadow: 0 4px 20px rgba(0, 255, 128, 0.08);
+    }
+
+    .form-input,
+    .form-select {
+      background-color: #1f2937;
+      border-color: #374151;
+    }
   </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center px-4 py-10 text-white">
 
-  <div class="w-full max-w-xl bg-[#1a1a1a] rounded-2xl shadow-lg p-8 border border-gray-800">
+<body class="min-h-screen flex flex-col items-center justify-center px-4 py-10 text-white font-sans">
+
+  <div class="w-full max-w-xl card rounded-xl p-8 border border-green-700">
 
     <!-- Header -->
     <div class="mb-8 text-center">
-      <h2 class="text-4xl font-bold text-green-400">Book Battery Swap</h2>
-      <p class="text-sm text-gray-400 mt-2">Plan your appointment with comfort and speed</p>
+      <h2 class="text-4xl font-bold text-green-400 mb-1">🔋 Book Battery Swap</h2>
+      <p class="text-sm text-gray-400">Plan your appointment with ease and speed</p>
     </div>
 
     <!-- Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
-          <div class="mb-4 px-4 py-2 rounded text-sm
+          <div class="mb-4 px-4 py-2 rounded text-sm 
                       {{ 'bg-green-100 text-green-800' if category == 'success' else 'bg-red-100 text-red-800' }}">
             {{ message }}
           </div>
@@ -43,10 +55,10 @@
 
       <!-- Station Select -->
       <div>
-        <label class="block text-sm text-gray-300 mb-1">Select Station</label>
+        <label class="block text-sm text-gray-300 mb-1 font-medium">Select Station</label>
         <div class="relative">
-          <select name="station_id" id="station" required onchange="updateBatteryInfo()"
-                  class="appearance-none w-full bg-gray-800 border border-gray-700 text-white px-4 py-2 rounded focus:ring-2 focus:ring-green-400 outline-none cursor-pointer">
+          <select name="station_id" id="station" required
+            class="form-select appearance-none w-full border px-4 py-2 rounded focus:ring-2 focus:ring-green-400 outline-none cursor-pointer">
             {% for s in stations %}
               <option value="{{ s[0] }}" data-available="{{ s[3] }}">
                 {{ s[1] }} - {{ s[2] }} ({{ s[3] }} available)
@@ -55,7 +67,9 @@
           </select>
           <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
             <svg class="h-4 w-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.939l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.25 8.27a.75.75 0 01-.02-1.06z" clip-rule="evenodd" />
+              <path fill-rule="evenodd"
+                d="M5.23 7.21a.75.75 0 011.06.02L10 10.939l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.25 8.27a.75.75 0 01-.02-1.06z"
+                clip-rule="evenodd" />
             </svg>
           </div>
         </div>
@@ -64,22 +78,24 @@
 
       <!-- Date -->
       <div>
-        <label class="block text-sm text-gray-300 mb-1">Date</label>
-        <input type="date" name="date" required
-               class="w-full bg-gray-800 border border-gray-700 text-white px-4 py-2 rounded focus:ring-2 focus:ring-green-400 outline-none">
+        <label class="block text-sm text-gray-300 mb-1 font-medium">Date</label>
+        <input type="date" name="date" id="date" required
+          class="form-input w-full border px-4 py-2 rounded focus:ring-2 focus:ring-green-400 outline-none"
+          min="">
       </div>
 
       <!-- Time -->
       <div>
-        <label class="block text-sm text-gray-300 mb-1">Time</label>
-        <input type="time" name="time" required
-               class="w-full bg-gray-800 border border-gray-700 text-white px-4 py-2 rounded focus:ring-2 focus:ring-green-400 outline-none">
+        <label class="block text-sm text-gray-300 mb-1 font-medium">Time</label>
+        <input type="time" name="time" id="time" required
+          class="form-input w-full border px-4 py-2 rounded focus:ring-2 focus:ring-green-400 outline-none">
+        <p id="slot-status" class="text-xs mt-2"></p>
       </div>
 
       <!-- Submit -->
       <button type="submit"
-              class="w-full bg-green-500 text-black py-3 rounded hover:bg-green-400 transition font-semibold text-lg">
-        Confirm Booking
+        class="w-full bg-green-500 text-black py-3 rounded hover:bg-green-400 transition font-semibold text-lg">
+        ✅ Confirm Booking
       </button>
     </form>
 
@@ -90,29 +106,68 @@
   </div>
 
   <!-- Footer -->
-  <footer class="text-sm text-green-500 mt-10 text-center">
+  <footer class="text-green-500 text-center py-4 text-sm mt-10 border-t border-gray-800 w-full">
     &copy; {{ 2025 }} EV Battery Booking System
   </footer>
 
-<script>
-function updateBatteryInfo() {
-  const select = document.getElementById('station');
-  const selectedOption = select.options[select.selectedIndex];
-  const available = selectedOption.getAttribute('data-available');
-  document.getElementById('battery-info').innerText = `Available Batteries: ${available}`;
-}
+  <!-- Scripts -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const today = new Date().toISOString().split("T")[0];
+      document.getElementById("date").setAttribute("min", today);
+    });
 
-document.querySelector("form").addEventListener("submit", function(e) {
-  const select = document.getElementById('station');
-  const selectedOption = select.options[select.selectedIndex];
-  const available = parseInt(selectedOption.getAttribute('data-available'));
-  if (available <= 0) {
-    const confirmBooking = confirm("⚠️ No batteries available at this station. Do you still want to continue?");
-    if (!confirmBooking) e.preventDefault();
-  }
-});
-window.onload = updateBatteryInfo;
-</script>
+    function updateBatteryInfo() {
+      const select = document.getElementById('station');
+      const selectedOption = select.options[select.selectedIndex];
+      const available = selectedOption.getAttribute('data-available');
+      document.getElementById('battery-info').innerText = `Available Batteries: ${available}`;
+    }
+
+    function checkSlotAvailability() {
+      const station = document.getElementById('station').value;
+      const date = document.getElementById('date').value;
+      const time = document.getElementById('time').value;
+
+      if (station && date && time) {
+        fetch('/check_slot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `station_id=${station}&date=${date}&time=${time}`
+        })
+          .then(res => res.json())
+          .then(data => {
+            const msg = document.getElementById('slot-status');
+            if (data.available) {
+              msg.textContent = "✅ Slot is available!";
+              msg.className = "text-green-400 text-xs mt-2";
+            } else {
+              msg.textContent = "❌ Slot is already booked.";
+              msg.className = "text-red-400 text-xs mt-2";
+            }
+          });
+      }
+    }
+
+    document.getElementById('station').addEventListener('change', () => {
+      updateBatteryInfo();
+      checkSlotAvailability();
+    });
+    document.getElementById('date').addEventListener('change', checkSlotAvailability);
+    document.getElementById('time').addEventListener('change', checkSlotAvailability);
+
+    document.querySelector("form").addEventListener("submit", function (e) {
+      const select = document.getElementById('station');
+      const selectedOption = select.options[select.selectedIndex];
+      const available = parseInt(selectedOption.getAttribute('data-available'));
+      if (available <= 0) {
+        const confirmBooking = confirm("⚠️ No batteries available at this station. Do you still want to continue?");
+        if (!confirmBooking) e.preventDefault();
+      }
+    });
+
+    window.onload = updateBatteryInfo;
+  </script>
 
 </body>
 </html>
