@@ -6,7 +6,7 @@
 ![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-3.0-blue?logo=tailwind-css&logoColor=white)
 ![Railway](https://img.shields.io/badge/DB%20Hosted%20on-Railway-4B5563?logo=railway)
 ![Render](https://img.shields.io/badge/Deployed%20on-Render-00c896?logo=render&logoColor=white)
-![MIT License](https://img.shields.io/badge/License-MIT-green)
+
 
 A full-stack web application that allows users to book EV battery appointments and provides an admin panel to manage stations, appointments, users, and feedback.
 
