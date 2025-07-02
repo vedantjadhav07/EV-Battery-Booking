@@ -5,6 +5,7 @@ from flask import Response, Flask, render_template, request, redirect, session, 
 from werkzeug.security import generate_password_hash, check_password_hash
 from db_config import init_db
 from markupsafe import Markup  
+from utils import login_required, admin_required
 
 import json
 from dotenv import load_dotenv
@@ -20,7 +21,9 @@ def index():
     return render_template('index.html')
 
 @app.route('/profile')
+@login_required
 def profile():
+    
     if 'user_id' not in session:
         flash("Please log in to view your profile.", "warning")
         return redirect(url_for('login'))
@@ -77,6 +80,7 @@ def register():
 
 
 @app.route('/login', methods=['GET', 'POST'])
+
 def login():
     if request.method == 'POST':
         email = request.form['email']
@@ -98,6 +102,7 @@ def login():
     return render_template('login.html')
 
 @app.route('/dashboard')
+@login_required
 def dashboard():
     if 'user_id' not in session:
         return redirect(url_for('login'))
@@ -113,6 +118,7 @@ def logout():
     return redirect(url_for('index'))
 
 @app.route('/book', methods=['GET', 'POST'])
+@login_required
 def book():
     
     if 'user_id' not in session:
@@ -165,6 +171,7 @@ def book():
     return render_template('book.html', stations=stations)
 
 @app.route('/my_appointments')
+@login_required
 def my_appointments():
     if 'user_id' not in session:
         return redirect(url_for('login'))
@@ -212,6 +219,7 @@ def cancel_appointment(appointment_id):
 
 
 @app.route('/check_slot', methods=['POST'])
+@login_required
 def check_slot():
     station_id = request.form['station_id']
     date = request.form['date']
@@ -228,8 +236,8 @@ def check_slot():
     return {'available': conflict_count == 0}
 
 
-
 @app.route('/feedback', methods=['GET', 'POST'])
+@login_required
 def feedback():
     session.pop('_flashes', None)
     if 'user_id' not in session:
@@ -268,6 +276,7 @@ def feedback():
 
 #admin all 
 @app.route('/admin/dashboard')
+@admin_required
 def admin_dashboard():
     if session.get('user_role') != 'admin':
         flash("Access denied", "danger")
@@ -278,6 +287,7 @@ def admin_dashboard():
 
 
 @app.route('/admin/add_station', methods=['GET', 'POST'])
+@admin_required
 def add_station():
     session.pop('_flashes', None)  # clear stale messages
     if session.get('user_role') != 'admin':
@@ -318,6 +328,7 @@ def add_station():
     return render_template("admin_add_station.html", stations=stations)
 
 @app.route('/admin/delete_station/<int:station_id>')
+@admin_required
 def delete_station(station_id):
     if session.get('user_role') != 'admin':
         flash("Access denied", "danger")
@@ -331,6 +342,7 @@ def delete_station(station_id):
     return redirect(url_for('add_station'))  # ✅ Corrected
 
 @app.route('/admin/edit_station/<int:station_id>')
+@admin_required
 def edit_station(station_id):
     if session.get('user_role') != 'admin':
         flash("Access denied", "danger")
@@ -350,6 +362,7 @@ def edit_station(station_id):
 
 
 @app.route('/admin/view_appointments')
+@admin_required
 def view_appointments():
     if session.get('user_role') != 'admin':
         flash("Access denied", "danger")
@@ -396,6 +409,7 @@ def view_appointments():
         selected_station=selected_station
     )
 @app.route('/admin/update_status/<int:appointment_id>/<status>')
+@admin_required
 def update_status(appointment_id, status):
     if session.get('user_role') != 'admin':
         flash("Unauthorized access", "danger")
@@ -411,6 +425,7 @@ def update_status(appointment_id, status):
 
 
 @app.route('/admin/delete/<int:appointment_id>')
+@admin_required
 def delete_appointment(appointment_id):
     if session.get('user_role') != 'admin':
         flash("Unauthorized access", "danger")
@@ -436,6 +451,7 @@ def delete_appointment(appointment_id):
     return redirect(url_for('view_appointments'))
 
 @app.route('/admin/view_users')
+@admin_required
 def view_users():
     if session.get('user_role') != 'admin':
         flash("Access denied", "danger")
@@ -448,6 +464,7 @@ def view_users():
     return render_template("admin_view_users.html", users=users)
 
 @app.route('/admin/delete_user/<int:user_id>')
+@admin_required
 def delete_user(user_id):
     if session.get('user_role') != 'admin':
         flash("Access denied", "danger")
@@ -475,6 +492,7 @@ def delete_user(user_id):
     return redirect(url_for('view_users'))
 
 @app.route('/contact', methods=['GET', 'POST'])
+@admin_required
 def contact():
     if request.method == 'POST':
         name = request.form['name']
@@ -486,6 +504,7 @@ def contact():
     return render_template('contact.html')
 
 @app.route('/admin/feedback')
+@admin_required
 def admin_feedback():
     if session.get('user_role') != 'admin':
         flash("Access denied", "danger")
@@ -524,6 +543,7 @@ def admin_feedback():
 
 
 @app.route('/admin/view_feedbacks')
+@admin_required
 def view_feedbacks():
     if session.get('user_role') != 'admin':
         flash("Access denied", "danger")
@@ -554,6 +574,17 @@ def view_feedbacks():
     cur.close()
 
     return render_template("admin_view_feedbacks.html", feedback=feedback, avg_ratings=avg_ratings or [0, 0, 0, 0, 0])
+
+
+@app.errorhandler(403)
+def forbidden(e):
+    flash("Access forbidden.", "danger")
+    return redirect(url_for('dashboard'))
+
+@app.errorhandler(404)
+def page_not_found(e):
+    flash("Page not found.", "warning")
+    return redirect(url_for('dashboard'))
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
