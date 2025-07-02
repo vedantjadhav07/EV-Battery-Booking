@@ -21,6 +21,22 @@
 
 <body class="text-white min-h-screen flex items-center justify-center p-0 m-0">
     <div class="bg-[#111] shadow-2xl w-full h-screen overflow-hidden grid grid-cols-1 md:grid-cols-2">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="fixed top-5 right-5 space-y-2 z-50">
+            {% for category, message in messages %}
+            <div class="px-4 py-3 rounded shadow-md transition duration-300
+                    {% if category == 'success' %} bg-green-500 text-white
+                    {% elif category == 'warning' %} bg-yellow-500 text-black
+                    {% elif category == 'danger' %} bg-red-500 text-white
+                    {% elif category == 'info' %} bg-blue-500 text-white
+                    {% else %} bg-gray-700 text-white {% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
         <!-- Left Panel -->
         <div class="p-16 green-glow relative z-10 flex flex-col justify-center w-full">
             <div class="text-left max-w-2xl mx-auto">

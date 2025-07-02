@@ -47,7 +47,7 @@ def profile():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    session.pop('_flashes', None)  # clear stale messages
+    session.pop('_flashes', None) 
 
     if request.method == 'POST':
         name = request.form['name']
@@ -107,13 +107,14 @@ def dashboard():
 
 @app.route('/logout')
 def logout():
+    session.pop('_flashes', None)  # clear stale messages
     session.clear()
     flash('Logged out successfully.', 'info')
     return redirect(url_for('index'))
 
 @app.route('/book', methods=['GET', 'POST'])
 def book():
-    session.pop('_flashes', None)  # clear stale messages
+    
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
@@ -158,7 +159,7 @@ def book():
         cur.close()
 
         flash(f"Appointment {status}!", "success" if status == 'approved' else "warning")
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('book'))
 
     cur.close()
     return render_template('book.html', stations=stations)
@@ -230,6 +231,7 @@ def check_slot():
 
 @app.route('/feedback', methods=['GET', 'POST'])
 def feedback():
+    session.pop('_flashes', None)
     if 'user_id' not in session:
         flash("Please log in to give feedback", "danger")
         return redirect(url_for('login'))

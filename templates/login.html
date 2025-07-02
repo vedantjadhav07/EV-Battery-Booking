@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Login | EV Battery Booking</title>
@@ -9,28 +10,48 @@
     body {
       background-color: #0f0f0f;
     }
+
     .green-glow {
       background: radial-gradient(circle at bottom left, #00ff73, transparent 60%);
     }
   </style>
 </head>
+
 <body class="min-h-screen flex items-center justify-center green-glow">
 
-  <div class="bg-[#111] shadow-2xl rounded-xl w-full max-w-5xl overflow-hidden grid grid-cols-1 md:grid-cols-2 text-white">
-    
-  
-    <div class="flex flex-col justify-center items-start p-10 bg-gradient-to-br from-green-600 via-green-500 to-green-700">
+  <div
+    class="bg-[#111] shadow-2xl rounded-xl w-full max-w-5xl overflow-hidden grid grid-cols-1 md:grid-cols-2 text-white">
+
+
+    <div
+      class="flex flex-col justify-center items-start p-10 bg-gradient-to-br from-green-600 via-green-500 to-green-700">
       <h2 class="text-4xl font-bold mb-4">Welcome</h2>
       <p class="text-lg text-green-100 mb-6">
         Login to book your EV battery swap and join the green movement.
       </p>
     </div>
 
-    
+
     <div class="bg-[#1a1a1a] p-10">
       <h2 class="text-3xl font-bold text-green-400 text-center mb-6">Login to Your Account</h2>
 
-      
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div class="fixed top-5 right-5 space-y-2 z-50">
+        {% for category, message in messages %}
+        <div class="px-4 py-3 rounded shadow-md transition duration-300
+                    {% if category == 'success' %} bg-green-500 text-white
+                    {% elif category == 'warning' %} bg-yellow-500 text-black
+                    {% elif category == 'danger' %} bg-red-500 text-white
+                    {% elif category == 'info' %} bg-blue-500 text-white
+                    {% else %} bg-gray-700 text-white {% endif %}">
+          {{ message }}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% endwith %}
+
 
       <form method="POST" class="space-y-5">
         <div>
@@ -57,4 +78,5 @@
   </div>
 
 </body>
+
 </html>
